@@ -1,0 +1,32 @@
+# Efeitos Frenéticos – configuração de segurança para Apache (cPanel e similares)
+Options -Indexes
+
+<IfModule mod_headers.c>
+Header always set Content-Security-Policy "default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; frame-ancestors 'none'"
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "DENY"
+Header always set Referrer-Policy "no-referrer"
+Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+Header always set Cross-Origin-Opener-Policy "same-origin"
+# HSTS: tire o # só depois de o HTTPS estar a funcionar em todo o site
+# Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# Redirecionar tudo para HTTPS: tire os # quando o certificado SSL estiver activo
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Bloquear ficheiros escondidos
+<FilesMatch "^\.">
+Require all denied
+</FilesMatch>
+
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType image/jpeg "access plus 1 month"
+ExpiresByType image/png "access plus 1 month"
+ExpiresByType image/svg+xml "access plus 1 month"
+ExpiresByType text/css "access plus 1 week"
+ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
